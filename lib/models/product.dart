@@ -15,7 +15,6 @@ class Product {
     this.isFavorite = false,
   });
 
-  /// Controla a ação do toggle de produtos favoritos
   void toggleFavorite() {
     isFavorite = !isFavorite;
   }
