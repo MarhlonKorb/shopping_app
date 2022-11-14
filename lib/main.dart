@@ -16,6 +16,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     // Widget responsável por notificar a classe ProductList das mudanças na lista
     return ChangeNotifierProvider(
+      // Momento da criação do Provider 
       create: (_) => ProductList(),
       child: MaterialApp(
         title: 'Flutter Demo',
