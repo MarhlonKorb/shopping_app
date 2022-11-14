@@ -4,13 +4,13 @@ import 'package:shop/models/product.dart';
 import 'package:shop/utils/app_routes.dart';
 
 class ProductItem extends StatelessWidget {
-  const ProductItem({super.key});
+  const ProductItem({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     // Ao invés de termos o product no construtor da classe,
     // é possivel obter o provider de Product para receber os dados da lista de forma atualizada
-    final product = Provider.of<Product>(context, listen: true);
+    final product = Provider.of<Product>(context, listen: false);
     // Atributo 'listen' do provider permite configurar se uma mudança deve ser notificada ou não
     // É utilizado em casos onde as alterações não geram impacto na interface gráfica do app=
     return ClipRRect(
@@ -18,14 +18,16 @@ class ProductItem extends StatelessWidget {
       child: GridTile(
         footer: GridTileBar(
           backgroundColor: Colors.black87,
-          leading: IconButton(
-            onPressed: () {
-              product.toggleFavorite();
-            },
-            icon: product.isFavorite
-                ? const Icon(Icons.favorite)
-                : const Icon(Icons.favorite_border),
-            color: Theme.of(context).colorScheme.secondary,
+          // Utilizando o Consumer, é possível notificar a mudança em lugares específicos dos componentes
+          leading: Consumer<Product>(
+            builder: (ctx, product, _) => IconButton(
+              onPressed: () {
+                product.toggleFavorite();
+              },
+              icon: Icon(
+                  product.isFavorite ? Icons.favorite : Icons.favorite_border),
+              color: Theme.of(context).colorScheme.secondary,
+            ),
           ),
           title: Text(
             product.title,
