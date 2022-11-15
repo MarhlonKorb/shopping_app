@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:shop/models/cart.dart';
 import 'package:shop/models/product_list.dart';
 import 'package:shop/pages/product_detail_page.dart';
 import 'package:shop/pages/products_overview_page.dart';
@@ -14,10 +15,13 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Widget responsável por notificar a classe ProductList das mudanças na lista
-    return ChangeNotifierProvider(
-      // Momento da criação do Provider 
-      create: (_) => ProductList(),
+    // Conceito de MultiProvider, para inicialização de vários providers organizadamente
+    return MultiProvider(
+      providers: [
+        // Widget responsável por notificar a classe ProductList das mudanças na lista
+        ChangeNotifierProvider(create: (_) => ProductList()),
+        ChangeNotifierProvider(create: (_) => Cart()),
+      ],
       child: MaterialApp(
         title: 'Flutter Demo',
         theme: ThemeData(
@@ -27,7 +31,7 @@ class MyApp extends StatelessWidget {
           ),
           fontFamily: 'Lato',
         ),
-        home:  ProductsOverviewPage(),
+        home: ProductsOverviewPage(),
         routes: {
           AppRoutes.productDetail: (ctx) => const ProductDetailPage(),
         },

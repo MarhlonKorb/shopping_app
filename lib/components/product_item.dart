@@ -3,6 +3,8 @@ import 'package:provider/provider.dart';
 import 'package:shop/models/product.dart';
 import 'package:shop/utils/app_routes.dart';
 
+import '../models/cart.dart';
+
 class ProductItem extends StatelessWidget {
   const ProductItem({Key? key}) : super(key: key);
 
@@ -11,6 +13,7 @@ class ProductItem extends StatelessWidget {
     // Ao invés de termos o product no construtor da classe,
     // é possivel obter o provider de Product para receber os dados da lista de forma atualizada
     final product = Provider.of<Product>(context, listen: false);
+    final cart = Provider.of<Cart>(context, listen: false);
     // Atributo 'listen' do provider permite configurar se uma mudança deve ser notificada ou não
     // É utilizado em casos onde as alterações não geram impacto na interface gráfica do app=
     return ClipRRect(
@@ -34,7 +37,9 @@ class ProductItem extends StatelessWidget {
             textAlign: TextAlign.center,
           ),
           trailing: IconButton(
-            onPressed: () {},
+            onPressed: () {
+              cart.addItem(product);
+            },
             icon: const Icon(Icons.shopping_cart),
             color: Theme.of(context).colorScheme.secondary,
           ),
