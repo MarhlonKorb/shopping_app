@@ -7,8 +7,8 @@ class Badge extends StatelessWidget {
 
   const Badge({
     Key? key,
-    required this.value,
     required this.child,
+    required this.value,
     this.color,
   }) : super(key: key);
 
@@ -20,24 +20,26 @@ class Badge extends StatelessWidget {
         child,
         Positioned(
           right: 8,
-          left: 8,
+          top: 8,
           child: Container(
             padding: const EdgeInsets.all(2),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(10),
-              color: color ?? Theme.of(context).colorScheme.secondary
+              color: color ?? Theme.of(context).colorScheme.secondary,
             ),
-             constraints: const BoxConstraints(
+            constraints: const BoxConstraints(
               minHeight: 16,
-              minWidth: 16
-             ),
+              minWidth: 16,
+            ),
             child: Text(
-              textAlign: TextAlign.center,
               value,
-              style: const TextStyle(fontSize: 10),
+              textAlign: TextAlign.center,
+              style: const TextStyle(
+                fontSize: 10,
+              ),
             ),
           ),
-        )
+        ),
       ],
     );
   }
