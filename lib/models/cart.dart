@@ -10,12 +10,12 @@ class Cart with ChangeNotifier {
   Map<String, CartItem> _items = {};
 
   Map<String, CartItem> get items {
-    return {...items};
+    return {..._items};
   }
 
 /// Retorna quantidade de itens no carrinho
   int get itemsCount {
-    return _items.length;
+    return items.length;
   }
 
 /// Método que calcula o valor total do carrinho
