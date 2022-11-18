@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:shop/components/product_item.dart';
+import 'package:shop/components/product_grid_item.dart';
 
 import '../models/product.dart';
 import '../models/product_list.dart';
@@ -25,7 +25,7 @@ class ProductGrid extends StatelessWidget {
         // Recebe a notificação sempre que o produto for alterado
         // Para alterar o widget child ProductItem()
         value: loadedProducts[i],
-        child: const ProductItem(),
+        child: const ProductGridItem(),
       ),
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 2,

@@ -5,8 +5,8 @@ import 'package:shop/utils/app_routes.dart';
 
 import '../models/cart.dart';
 
-class ProductItem extends StatelessWidget {
-  const ProductItem({Key? key}) : super(key: key);
+class ProductGridItem extends StatelessWidget {
+  const ProductGridItem({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -38,6 +38,19 @@ class ProductItem extends StatelessWidget {
           ),
           trailing: IconButton(
             onPressed: () {
+              ScaffoldMessenger.of(context).hideCurrentSnackBar();
+              // Snackbar de mensagem que possibilita desfazer a inserção de produtos no carrinho
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: const Text('Produto adicionado com sucesso'),
+                  duration: const Duration(milliseconds: 2500),
+                  action: SnackBarAction(
+                      label: 'Desfazer',
+                      onPressed: () {
+                        cart.removeSigleItem(product.id);
+                      }),
+                ),
+              );
               cart.addItem(product);
             },
             icon: const Icon(Icons.shopping_cart),
