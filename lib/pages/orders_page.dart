@@ -17,13 +17,19 @@ class OrderPage extends StatelessWidget {
         centerTitle: true,
       ),
       drawer: const AppDrawer(),
-      body: ListView.builder(
-        itemCount: orders.itemsCount,
-        itemBuilder:  (cxt, i) => 
-          OrderWidget(order: orders.items[i]),
-        
-      ),
+      body: orders.itemsCount > 0
+          ? ListView.builder(
+              itemCount: orders.itemsCount,
+              itemBuilder: (cxt, i) => OrderWidget(order: orders.items[i]),
+            )
+          : const Card(
+              child: Center(
+                child: Text(
+                  'Nenhum pedido realizado.',
+                  style: TextStyle(fontSize: 18),
+                ),
+              ),
+            ),
     );
   }
-  
 }

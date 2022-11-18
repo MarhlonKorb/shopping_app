@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 
+/// Classe responsável pelo formulário de cadastro de produtos
 class ProductFormPage extends StatefulWidget {
   const ProductFormPage({super.key});
 
   @override
   State<ProductFormPage> createState() => _ProductFormPageState();
 }
-
 class _ProductFormPageState extends State<ProductFormPage> {
   final _priceFocus = FocusNode();
   final _descriptionFocus = FocusNode();
