@@ -45,12 +45,21 @@ final hasId = data['id'] != null;
     notifyListeners();
   }
 
-/// Atualiza o produto caso o índice do produto esteja na lista de itens
+/// Atualiza o produto caso o índice do produto pertença a lista de itens
 void updateProduct(Product product){
   int index = _items.indexWhere((p) => p.id == product.id);
 
   if (index >= 0) {
     _items[index] = product;
+  }
+  notifyListeners();
+}
+
+void removeProduct(Product product){
+  int index = _items.indexWhere((p) => p.id == product.id);
+
+  if (index >= 0) {
+    _items.removeWhere((p) => p.id == product.id);
   }
   notifyListeners();
 }
