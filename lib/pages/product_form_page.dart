@@ -18,12 +18,32 @@ class _ProductFormPageState extends State<ProductFormPage> {
   final _imageUrlCOntroller = TextEditingController();
   // GlobalKey retorna o estado atual do formulário
   final _formKey = GlobalKey<FormState>();
-  final _formData = Map<String, dynamic>;
+  final _formData = <String, Object>{};
 
   @override
   void initState() {
     super.initState();
     _imageUrlFocus.addListener(updateImage);
+  }
+
+  /// Carrega dados em momentos específicos
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (_formData.isEmpty) {
+      final arg = ModalRoute.of(context)?.settings.arguments;
+      // Se arg não for nulo, os dados estão vindo de uma tela de edição
+      if (arg != null) {
+        final product = arg as Product;
+        _formData['id'] = product.id;
+        _formData['name'] = product.name;
+        _formData['price'] = product.price;
+        _formData['description'] = product.description;
+        _formData['imageUrl'] = product.imageUrl;
+
+        _imageUrlCOntroller.text = product.imageUrl;
+      }
+    }
   }
 
   /// Libera os recursos de memória assim que o usuário sai da tela
@@ -48,8 +68,7 @@ class _ProductFormPageState extends State<ProductFormPage> {
     }
     _formKey.currentState?.save();
 
-    Provider.of<ProductList>(context, listen: false)
-        .saveProductFromData(_formData);
+    Provider.of<ProductList>(context, listen: false).saveProduct(_formData);
     Navigator.of(context).pop();
   }
 
@@ -81,6 +100,8 @@ class _ProductFormPageState extends State<ProductFormPage> {
           child: ListView(
             children: [
               TextFormField(
+                // Recupera o valor do dado carregado no método didChangeDependencies()
+                initialValue: _formData['name']?.toString(),
                 decoration: const InputDecoration(labelText: 'Nome'),
                 // Segue para o próximo elemento/input
                 textInputAction: TextInputAction.next,
@@ -89,8 +110,7 @@ class _ProductFormPageState extends State<ProductFormPage> {
                 onFieldSubmitted: ((_) {
                   FocusScope.of(context).requestFocus(_priceFocus);
                 }),
-                onSaved: (name) =>
-                    (_formData as Map<String, dynamic>)['name'] = name ?? '',
+                onSaved: (name) => (_formData)['name'] = name ?? '',
                 validator: (_name) {
                   final name = _name ?? '';
                   if (name.trim().isEmpty) {
@@ -103,6 +123,7 @@ class _ProductFormPageState extends State<ProductFormPage> {
                 },
               ),
               TextFormField(
+                initialValue: _formData['price']?.toString(),
                 decoration: const InputDecoration(labelText: 'Preço'),
                 // Segue para o próximo elemento/input
                 textInputAction: TextInputAction.next,
@@ -113,8 +134,7 @@ class _ProductFormPageState extends State<ProductFormPage> {
                 onFieldSubmitted: (_) {
                   FocusScope.of(context).requestFocus(_descriptionFocus);
                 },
-                onSaved: (price) => (_formData
-                    as Map<String, dynamic>)['price'] = double.parse(price!),
+                onSaved: (price) => (_formData)['price'] = double.parse(price!),
                 validator: (_price) {
                   final priceString = _price ?? '-1';
                   final price = double.tryParse(priceString) ?? -1;
@@ -126,13 +146,14 @@ class _ProductFormPageState extends State<ProductFormPage> {
                 },
               ),
               TextFormField(
+                initialValue: _formData['description']?.toString(),
                 decoration: const InputDecoration(labelText: 'Descrição'),
                 textInputAction: TextInputAction.next,
                 focusNode: _descriptionFocus,
                 keyboardType: TextInputType.multiline,
                 maxLines: 2,
-                onSaved: (description) => (_formData
-                    as Map<String, dynamic>)['description'] = description ?? '',
+                onSaved: (description) =>
+                    (_formData)['description'] = description ?? '',
                 validator: (_description) {
                   final description = _description ?? '';
                   if (description.trim().isEmpty) {
@@ -156,13 +177,13 @@ class _ProductFormPageState extends State<ProductFormPage> {
                       keyboardType: TextInputType.url,
                       controller: _imageUrlCOntroller,
                       onFieldSubmitted: (_) => _onSubmitForm(),
-                      onSaved: (urlImage) => (_formData
-                          as Map<String, dynamic>)['urlImage'] = urlImage ?? '',
+                      onSaved: (urlImage) =>
+                          (_formData)['urlImage'] = urlImage ?? '',
                       validator: (_imageUrl) {
                         final imageUrl = _imageUrl ?? '';
-                        if (!isValidImageUrl(imageUrl)) {
-                          return 'Informe uma Url válida';
-                        }
+                        // if (!isValidImageUrl(imageUrl)) {
+                        //   return 'Informe uma Url válida';
+                        // }
                         return null;
                       },
                     ),
@@ -184,7 +205,7 @@ class _ProductFormPageState extends State<ProductFormPage> {
                             fit: BoxFit.cover,
                             child: Image.network(_imageUrlCOntroller.text),
                           ),
-                  )
+                  ),
                 ],
               ),
             ],

@@ -25,19 +25,38 @@ class ProductList with ChangeNotifier {
   }
 
 /// Método que realiza a adição o produto a lista notificando o provider  da alteração
-  void saveProductFromData(Map<String, Object> data) {
-    final newProduct = Product(
+  void saveProduct(Map<String, Object> data) {
+final hasId = data['id'] != null; 
+
+    final product = Product(
       // Salva o estado atual de cada campo do formulário
-      id: Random().nextDouble().toString(),
+      id: hasId ? data['id'].toString() : Random().nextDouble().toString(),
       name: data['name'].toString(),
-      description: data[' description'].toString(),
+      description: data['description'].toString(),
       price: data['price'] as double,
       imageUrl: data['imageUrl'].toString(),
     );
-    addProduct(newProduct);
+
+    if (hasId) {
+      updateProduct(product);
+    } else {
+      addProduct(product);
+    }
     notifyListeners();
   }
+
+/// Atualiza o produto caso o índice do produto esteja na lista de itens
+void updateProduct(Product product){
+  int index = _items.indexWhere((p) => p.id == product.id);
+
+  if (index >= 0) {
+    _items[index] = product;
+  }
+  notifyListeners();
 }
+
+}
+
   // final List<Product> _items = dummyProducts;
   // bool _showFavoriteOnly = false;
   
