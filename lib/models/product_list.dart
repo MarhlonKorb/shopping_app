@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/cupertino.dart';
 import 'package:shop/data/dummy_data.dart';
 import 'package:shop/models/product.dart';
@@ -19,6 +21,20 @@ class ProductList with ChangeNotifier {
   void addProduct(Product product) {
     _items.add(product);
     // Método que notifica o provider da mudança da lista
+    notifyListeners();
+  }
+
+/// Método que realiza a adição o produto a lista notificando o provider  da alteração
+  void saveProductFromData(Map<String, Object> data) {
+    final newProduct = Product(
+      // Salva o estado atual de cada campo do formulário
+      id: Random().nextDouble().toString(),
+      name: data['name'].toString(),
+      description: data[' description'].toString(),
+      price: data['price'] as double,
+      imageUrl: data['imageUrl'].toString(),
+    );
+    addProduct(newProduct);
     notifyListeners();
   }
 }

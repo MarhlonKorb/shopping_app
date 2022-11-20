@@ -1,7 +1,7 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:shop/models/product.dart';
+import 'package:shop/models/product_list.dart';
 
 /// Classe responsável pelo formulário de cadastro de produtos
 class ProductFormPage extends StatefulWidget {
@@ -43,21 +43,14 @@ class _ProductFormPageState extends State<ProductFormPage> {
 
   void _onSubmitForm() {
     final isValid = _formKey.currentState?.validate() ?? false;
-
     if (!isValid) {
       return;
     }
-
     _formKey.currentState?.save();
-    final newProduct = Product(
-      // Salva o estado atual de cada campo do formulário
-      id: Random().nextDouble().toString(),
-      name: (_formData as Map<String, dynamic>)['name'].toString(),
-      description:
-          (_formData as Map<String, dynamic>)[' description'].toString(),
-      price: (_formData as Map<String, dynamic>)['price'] as double,
-      imageUrl: (_formData as Map<String, dynamic>)['imageUrl'].toString(),
-    );
+
+    Provider.of<ProductList>(context, listen: false)
+        .saveProductFromData(_formData);
+    Navigator.of(context).pop();
   }
 
   /// Valida a url e se a extensão é no formato png,jpg ou jpeg
@@ -122,15 +115,15 @@ class _ProductFormPageState extends State<ProductFormPage> {
                 },
                 onSaved: (price) => (_formData
                     as Map<String, dynamic>)['price'] = double.parse(price!),
-                    validator: (_price) {
-                      final priceString = _price ?? '-1';
-                      final price = double.tryParse(priceString) ?? -1;
+                validator: (_price) {
+                  final priceString = _price ?? '-1';
+                  final price = double.tryParse(priceString) ?? -1;
 
-                      if (price <= 0) {
-                        return 'Informe um preço válido';
-                      }
-                      return null;
-                    },
+                  if (price <= 0) {
+                    return 'Informe um preço válido';
+                  }
+                  return null;
+                },
               ),
               TextFormField(
                 decoration: const InputDecoration(labelText: 'Descrição'),
@@ -156,23 +149,23 @@ class _ProductFormPageState extends State<ProductFormPage> {
                 children: [
                   Expanded(
                     child: TextFormField(
-                        decoration:
-                            const InputDecoration(labelText: 'Url da imagem'),
-                        textInputAction: TextInputAction.done,
-                        focusNode: _imageUrlFocus,
-                        keyboardType: TextInputType.url,
-                        controller: _imageUrlCOntroller,
-                        onFieldSubmitted: (_) => _onSubmitForm(),
-                        onSaved: (urlImage) =>
-                            (_formData as Map<String, dynamic>)['urlImage'] =
-                                urlImage ?? '', 
-                                validator: (_imageUrl) {
-                                  final imageUrl = _imageUrl ?? '';
-                                  if (!isValidImageUrl(imageUrl)) {
-                                    return 'Informe uma Url válida';
-                                  }
-                                  return null;
-                                },),
+                      decoration:
+                          const InputDecoration(labelText: 'Url da imagem'),
+                      textInputAction: TextInputAction.done,
+                      focusNode: _imageUrlFocus,
+                      keyboardType: TextInputType.url,
+                      controller: _imageUrlCOntroller,
+                      onFieldSubmitted: (_) => _onSubmitForm(),
+                      onSaved: (urlImage) => (_formData
+                          as Map<String, dynamic>)['urlImage'] = urlImage ?? '',
+                      validator: (_imageUrl) {
+                        final imageUrl = _imageUrl ?? '';
+                        if (!isValidImageUrl(imageUrl)) {
+                          return 'Informe uma Url válida';
+                        }
+                        return null;
+                      },
+                    ),
                   ),
                   Container(
                     height: 100,
