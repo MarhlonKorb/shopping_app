@@ -181,10 +181,9 @@ class _ProductFormPageState extends State<ProductFormPage> {
                           (_formData)['urlImage'] = urlImage ?? '',
                       validator: (_imageUrl) {
                         final imageUrl = _imageUrl ?? '';
-                        // if (!isValidImageUrl(imageUrl)) {
-                        //   return 'Informe uma Url válida';
-                        // }
-                        return null;
+                        if (!isValidImageUrl(imageUrl)) {
+                          return 'Informe uma Url válida';
+                        }
                       },
                     ),
                   ),
@@ -201,10 +200,7 @@ class _ProductFormPageState extends State<ProductFormPage> {
                     alignment: Alignment.center,
                     child: _imageUrlCOntroller.text.isEmpty
                         ? const Text('Informe a URL:')
-                        : FittedBox(
-                            fit: BoxFit.cover,
-                            child: Image.network(_imageUrlCOntroller.text),
-                          ),
+                        : Image.network(_imageUrlCOntroller.text),
                   ),
                 ],
               ),

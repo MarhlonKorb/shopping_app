@@ -53,8 +53,6 @@ class ProductsItem extends StatelessWidget {
                         .removeProduct(product);
                   }
                 });
-                // Provider.of<ProductList>(context, listen: false)
-                //     .removeProduct(product);
               },
               icon: const Icon(Icons.delete),
               color: Theme.of(context).colorScheme.error,

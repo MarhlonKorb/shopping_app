@@ -1,11 +1,14 @@
+import 'dart:convert';
 import 'dart:math';
 
 import 'package:flutter/cupertino.dart';
+import 'package:http/http.dart' as http;
 import 'package:shop/data/dummy_data.dart';
 import 'package:shop/models/product.dart';
 
 /// Classe que recebe as notificações do provider na classe ProductsOverviewPage
 class ProductList with ChangeNotifier {
+  final _baseUrl = 'https://shop-app-7a367-default-rtdb.firebaseio.com/';
   final List<Product> _items = dummyProducts;
 
   // Getter para retornar todos os itens ou apenas lista de itens filtrados
@@ -19,14 +22,40 @@ class ProductList with ChangeNotifier {
 
   /// Método que adiciona um produto na lista
   void addProduct(Product product) {
-    _items.add(product);
+    http
+        .post(
+          Uri.parse('$_baseUrl/products.json'),
+          body: jsonEncode(
+            {
+              'name': product.name,
+              'description': product.description,
+              'price': product.price,
+              'imageUrl': product.imageUrl,
+              'isFavorite': product.isFavorite
+            },
+          ),
+        )
+        .then((value) => (response) {
+              final id = jsonDecode(response.body)['name'];
+              _items.add(
+                Product(
+                  id: id,
+                  name: product.name,
+                  description: product.description,
+                  price: product.price,
+                  imageUrl: product.imageUrl,
+                  isFavorite: product.isFavorite,
+                ),
+              );
+            });
+
     // Método que notifica o provider da mudança da lista
     notifyListeners();
   }
 
-/// Método que realiza a adição o produto a lista notificando o provider  da alteração
+  /// Método que realiza a adição o produto a lista notificando o provider  da alteração
   void saveProduct(Map<String, Object> data) {
-final hasId = data['id'] != null; 
+    final hasId = data['id'] != null;
 
     final product = Product(
       // Salva o estado atual de cada campo do formulário
@@ -45,25 +74,24 @@ final hasId = data['id'] != null;
     notifyListeners();
   }
 
-/// Atualiza o produto caso o índice do produto pertença a lista de itens
-void updateProduct(Product product){
-  int index = _items.indexWhere((p) => p.id == product.id);
+  /// Atualiza o produto caso o índice do produto pertença a lista de itens
+  void updateProduct(Product product) {
+    int index = _items.indexWhere((p) => p.id == product.id);
 
-  if (index >= 0) {
-    _items[index] = product;
+    if (index >= 0) {
+      _items[index] = product;
+    }
+    notifyListeners();
   }
-  notifyListeners();
-}
 
-void removeProduct(Product product){
-  int index = _items.indexWhere((p) => p.id == product.id);
+  void removeProduct(Product product) {
+    int index = _items.indexWhere((p) => p.id == product.id);
 
-  if (index >= 0) {
-    _items.removeWhere((p) => p.id == product.id);
+    if (index >= 0) {
+      _items.removeWhere((p) => p.id == product.id);
+    }
+    notifyListeners();
   }
-  notifyListeners();
-}
-
 }
 
   // final List<Product> _items = dummyProducts;
