@@ -21,7 +21,7 @@ class ProductList with ChangeNotifier {
   }
 
   /// Método que adiciona um produto na lista
-  void addProduct(Product product) {
+  Future<void> addProduct(Product product) {
     http
         .post(
           Uri.parse('$_baseUrl/products.json'),
@@ -35,7 +35,7 @@ class ProductList with ChangeNotifier {
             },
           ),
         )
-        .then((value) => (response) {
+        .then<void>((value) => (response) {
               final id = jsonDecode(response.body)['name'];
               _items.add(
                 Product(
@@ -51,10 +51,11 @@ class ProductList with ChangeNotifier {
 
     // Método que notifica o provider da mudança da lista
     notifyListeners();
+    return Future.value();
   }
 
   /// Método que realiza a adição o produto a lista notificando o provider  da alteração
-  void saveProduct(Map<String, Object> data) {
+  Future<void> saveProduct(Map<String, Object> data) {
     final hasId = data['id'] != null;
 
     final product = Product(
@@ -67,21 +68,21 @@ class ProductList with ChangeNotifier {
     );
 
     if (hasId) {
-      updateProduct(product);
+      return updateProduct(product);
     } else {
-      addProduct(product);
+      return addProduct(product);
     }
-    notifyListeners();
   }
 
   /// Atualiza o produto caso o índice do produto pertença a lista de itens
-  void updateProduct(Product product) {
+  Future<void> updateProduct(Product product) {
     int index = _items.indexWhere((p) => p.id == product.id);
 
     if (index >= 0) {
       _items[index] = product;
     }
     notifyListeners();
+    return Future.value();
   }
 
   void removeProduct(Product product) {
