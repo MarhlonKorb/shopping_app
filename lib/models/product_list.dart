@@ -48,7 +48,6 @@ class ProductList with ChangeNotifier {
                 ),
               );
             });
-
     // Método que notifica o provider da mudança da lista
     notifyListeners();
     return Future.value();
