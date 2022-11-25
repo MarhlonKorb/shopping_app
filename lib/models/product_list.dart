@@ -21,33 +21,31 @@ class ProductList with ChangeNotifier {
   }
 
   /// Método que adiciona um produto na lista
-  Future<void> addProduct(Product product) {
-    http
-        .post(
-          Uri.parse('$_baseUrl/products.json'),
-          body: jsonEncode(
-            {
-              'name': product.name,
-              'description': product.description,
-              'price': product.price,
-              'imageUrl': product.imageUrl,
-              'isFavorite': product.isFavorite
-            },
-          ),
-        )
-        .then<void>((value) => (response) {
-              final id = jsonDecode(response.body)['name'];
-              _items.add(
-                Product(
-                  id: id,
-                  name: product.name,
-                  description: product.description,
-                  price: product.price,
-                  imageUrl: product.imageUrl,
-                  isFavorite: product.isFavorite,
-                ),
-              );
-            });
+  Future<void> addProduct(Product product) async {
+    final response = await http.post(
+      Uri.parse('$_baseUrl/products.json'),
+      body: jsonEncode(
+        {
+          'name': product.name,
+          'description': product.description,
+          'price': product.price,
+          'imageUrl': product.imageUrl,
+          'isFavorite': product.isFavorite
+        },
+      ),
+    );
+
+    final id = jsonDecode(response.body)['name'];
+    _items.add(
+      Product(
+        id: id,
+        name: product.name,
+        description: product.description,
+        price: product.price,
+        imageUrl: product.imageUrl,
+        isFavorite: product.isFavorite,
+      ),
+    );
     // Método que notifica o provider da mudança da lista
     notifyListeners();
     return Future.value();

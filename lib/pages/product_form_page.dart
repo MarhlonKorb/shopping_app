@@ -63,23 +63,24 @@ class _ProductFormPageState extends State<ProductFormPage> {
     setState(() {});
   }
 
-  void _onSubmitForm() {
+  Future<void> _onSubmitForm() async {
     final isValid = _formKey.currentState?.validate() ?? false;
     if (!isValid) {
       return;
     }
     _formKey.currentState?.save();
 
-    setState(() => _isLoading = false);
-
-    Provider.of<ProductList>(context, listen: false).saveProduct(_formData)
-        // Tratando erro ao invés de lançá-lo
-        .catchError((error) {
-      return showDialog<void>(
+    setState(() => _isLoading = true);
+    try {
+      await Provider.of<ProductList>(context, listen: false)
+          .saveProduct(_formData);
+          Navigator.of(context).pop();
+    } catch (error) {
+     await showDialog<void>(
         context: context,
         builder: (ctx) => AlertDialog(
           title: const Text('Ocorreu um erro.'),
-          content: const Text('Ocorreu um erro para salvar o produto.'),
+          content: const Text('Ocorreu um erro ao salvar o produto.'),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(context).pop(),
@@ -88,11 +89,11 @@ class _ProductFormPageState extends State<ProductFormPage> {
           ],
         ),
       );
-    }).then((value) {
-      // Valida o estado do CircularProgressIndicator
+    } finally {
+// Valida o estado do CircularProgressIndicator
       setState(() => _isLoading = false);
-      Navigator.of(context).pop();
-    });
+      
+    }
   }
 
   /// Valida a url e se a extensão é no formato png,jpg ou jpeg
