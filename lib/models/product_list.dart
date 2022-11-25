@@ -3,13 +3,13 @@ import 'dart:math';
 
 import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart' as http;
-import 'package:shop/data/dummy_data.dart';
 import 'package:shop/models/product.dart';
 
 /// Classe que recebe as notificações do provider na classe ProductsOverviewPage
 class ProductList with ChangeNotifier {
-  final _baseUrl = 'https://shop-app-7a367-default-rtdb.firebaseio.com/';
-  final List<Product> _items = dummyProducts;
+  final url =
+      'https://shop-app-7a367-default-rtdb.firebaseio.com/products.json';
+  final List<Product> _items = [];
 
   // Getter para retornar todos os itens ou apenas lista de itens filtrados
   List<Product> get items => [..._items];
@@ -20,10 +20,27 @@ class ProductList with ChangeNotifier {
     return _items.length;
   }
 
+  Future<void> loadProducts() async {
+    final response = await http.get(Uri.parse(url));
+    Map<String, dynamic> data = jsonDecode(response.body);
+    data.forEach((productId, productData) {
+      _items.add(
+        Product(
+            id: productId,
+            name: productData['name'],
+            description: productData['description'],
+            price: productData['price'],
+            imageUrl: productData['imageUrl'],
+            isFavorite: productData['isFavorite']),
+      );
+    });
+    notifyListeners();
+  }
+
   /// Método que adiciona um produto na lista
   Future<void> addProduct(Product product) async {
     final response = await http.post(
-      Uri.parse('$_baseUrl/products.json'),
+      Uri.parse(url),
       body: jsonEncode(
         {
           'name': product.name,
@@ -79,7 +96,7 @@ class ProductList with ChangeNotifier {
       _items[index] = product;
       notifyListeners();
     }
-    
+
     return Future.value();
   }
 
