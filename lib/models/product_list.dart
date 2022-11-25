@@ -77,8 +77,9 @@ class ProductList with ChangeNotifier {
 
     if (index >= 0) {
       _items[index] = product;
+      notifyListeners();
     }
-    notifyListeners();
+    
     return Future.value();
   }
 

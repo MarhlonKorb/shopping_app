@@ -54,6 +54,7 @@ class _ProductFormPageState extends State<ProductFormPage> {
     super.dispose();
     _priceFocus.dispose();
     _descriptionFocus.dispose();
+    _imageUrlFocus.removeListener(updateImage);
     _imageUrlFocus.dispose();
   }
 
@@ -158,6 +159,7 @@ class _ProductFormPageState extends State<ProductFormPage> {
                       focusNode: _priceFocus,
                       keyboardType: const TextInputType.numberWithOptions(
                         decimal: true,
+                        signed: true,
                       ),
                       onFieldSubmitted: (_) {
                         FocusScope.of(context).requestFocus(_descriptionFocus);
@@ -177,7 +179,6 @@ class _ProductFormPageState extends State<ProductFormPage> {
                     TextFormField(
                       initialValue: _formData['description']?.toString(),
                       decoration: const InputDecoration(labelText: 'Descrição'),
-                      textInputAction: TextInputAction.next,
                       focusNode: _descriptionFocus,
                       keyboardType: TextInputType.multiline,
                       maxLines: 2,
