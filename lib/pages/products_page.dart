@@ -9,6 +9,10 @@ import '../components/product_item.dart';
 class ProductsPage extends StatelessWidget {
   const ProductsPage({super.key});
 
+  Future<void> _refreshProducts(BuildContext context){
+    return Provider.of<ProductList>(context, listen: false).loadProducts();
+  }
+
   @override
   Widget build(BuildContext context) {
     final ProductList products = Provider.of(context);
@@ -24,17 +28,21 @@ class ProductsPage extends StatelessWidget {
                 icon: const Icon(Icons.add))
           ]),
       drawer: const AppDrawer(),
-      body: Padding(
-        padding: const EdgeInsets.all(8),
-        child: ListView.builder(
-          itemCount: products.itemsCount,
-          itemBuilder: (ctx, i) => Column(
-            children: [
-              ProductsItem(
-                products.items[i],
-              ),
-              const Divider(),
-            ],
+      // Widget que carrega a lista de itens a partir de um provider ao dar o pull da página
+      body: RefreshIndicator(
+        onRefresh: () => _refreshProducts(context),
+        child: Padding(
+          padding: const EdgeInsets.all(8),
+          child: ListView.builder(
+            itemCount: products.itemsCount,
+            itemBuilder: (ctx, i) => Column(
+              children: [
+                ProductsItem(
+                  products.items[i],
+                ),
+                const Divider(),
+              ],
+            ),
           ),
         ),
       ),
