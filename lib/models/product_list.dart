@@ -95,23 +95,21 @@ class ProductList with ChangeNotifier {
     int index = _items.indexWhere((p) => p.id == product.id);
 
     if (index >= 0) {
-      final response = await http.patch(
-      Uri.parse('$_baseUrl.json'),
-      body: jsonEncode(
-        {
-          'name': product.name,
-          'description': product.description,
-          'price': product.price,
-          'imageUrl': product.imageUrl,
-          'isFavorite': product.isFavorite
-        },
-      ),
-    );
+      await http.patch(
+        Uri.parse('$_baseUrl/${product.id}.json'),
+        body: jsonEncode(
+          {
+            'name': product.name,
+            'description': product.description,
+            'price': product.price,
+            'imageUrl': product.imageUrl,
+            'isFavorite': product.isFavorite
+          },
+        ),
+      );
       _items[index] = product;
       notifyListeners();
     }
-
-    return Future.value();
   }
 
   void removeProduct(Product product) {
