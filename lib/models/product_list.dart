@@ -5,11 +5,10 @@ import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart' as http;
 import 'package:shop/exceptions/http_exception.dart';
 import 'package:shop/models/product.dart';
+import 'package:shop/utils/constants.dart';
 
 /// Classe que recebe as notificações do provider na classe ProductsOverviewPage
 class ProductList with ChangeNotifier {
-  final _baseUrl =
-      'https://shop-app-7a367-default-rtdb.firebaseio.com/products';
   final List<Product> _items = [];
 
   // Getter para retornar todos os itens ou apenas lista de itens filtrados
@@ -23,11 +22,11 @@ class ProductList with ChangeNotifier {
 
   Future<void> loadProducts() async {
     _items.clear();
-    final response = await http.get(Uri.parse('$_baseUrl.json'));
+    final response = await http.get(Uri.parse('${Constants.productBaseUrl}.json'));
     if (response.body == 'null') return;
     Map<String, dynamic> data = jsonDecode(response.body);
     data.forEach((productId, productData) {
-      _items.add(
+     _items.add(
         Product(
             id: productId,
             name: productData['name'],
@@ -43,7 +42,7 @@ class ProductList with ChangeNotifier {
   /// Método que adiciona um produto na lista
   Future<void> addProduct(Product product) async {
     final response = await http.post(
-      Uri.parse('$_baseUrl.json'),
+      Uri.parse('${Constants.productBaseUrl}.json'),
       body: jsonEncode(
         {
           'name': product.name,
@@ -68,7 +67,6 @@ class ProductList with ChangeNotifier {
     );
     // Método que notifica o provider da mudança da lista
     notifyListeners();
-    return Future.value();
   }
 
   /// Método que realiza a adição o produto a lista notificando o provider  da alteração
@@ -97,7 +95,7 @@ class ProductList with ChangeNotifier {
 
     if (index >= 0) {
       await http.patch(
-        Uri.parse('$_baseUrl/${product.id}.json'),
+        Uri.parse('${Constants.productBaseUrl}/${product.id}.json'),
         body: jsonEncode(
           {
             'name': product.name,
@@ -122,7 +120,7 @@ class ProductList with ChangeNotifier {
       notifyListeners();
 
       final response = await http.delete(
-        Uri.parse('$_baseUrl/${product.id}.json'),
+        Uri.parse('$Constants.BASE_URL/${product.id}.json'),
       );
 
       // Caso o status code seja de erro(400), o item é retornado a lista de itens
