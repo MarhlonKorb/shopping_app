@@ -17,19 +17,25 @@ class OrderPage extends StatelessWidget {
         centerTitle: true,
       ),
       drawer: const AppDrawer(),
-      body: orders.itemsCount > 0
-          ? ListView.builder(
-              itemCount: orders.itemsCount,
-              itemBuilder: (cxt, i) => OrderWidget(order: orders.items[i]),
-            )
-          : const Card(
-              child: Center(
-                child: Text(
-                  'Nenhum pedido realizado.',
-                  style: TextStyle(fontSize: 18),
-                ),
+      // Componente que pode ser utilizado em componentes do tipo Stateless e conter um estado
+      body: FutureBuilder(
+        future: Provider.of<OrderList>(context, listen: false).loadOrders(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          } else if (snapshot.error != null) {
+            return const Center(
+                child: Text('Ocorreu um erro ao carregar a lista de pedidos.'));
+          } else {
+            return Consumer<OrderList>(
+              builder: (context, value, child) => ListView.builder(
+                itemCount: orders.itemsCount,
+                itemBuilder: (cxt, i) => OrderWidget(order: orders.items[i]),
               ),
-            ),
+            );
+          }
+        },
+      ),
     );
   }
 }
