@@ -3,6 +3,7 @@ import 'dart:math';
 
 import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart' as http;
+import 'package:shop/exceptions/http_exception.dart';
 import 'package:shop/models/product.dart';
 
 /// Classe que recebe as notificações do provider na classe ProductsOverviewPage
@@ -112,13 +113,25 @@ class ProductList with ChangeNotifier {
     }
   }
 
-  void removeProduct(Product product) {
+  Future<void> removeProduct(Product product) async {
     int index = _items.indexWhere((p) => p.id == product.id);
 
     if (index >= 0) {
+      final product = _items[index];
       _items.removeWhere((p) => p.id == product.id);
+      notifyListeners();
+
+      final response = await http.delete(
+        Uri.parse('$_baseUrl/${product.id}.json'),
+      );
+
+      // Caso o status code seja de erro(400), o item é retornado a lista de itens
+      if (response.statusCode >= 400) {
+        _items.insert(index, product);
+        notifyListeners();
+        throw HttpException(message: 'Não foi possível excluir o produto ${product.id}.', statusCode: response.statusCode);
+      }
     }
-    notifyListeners();
   }
 }
 

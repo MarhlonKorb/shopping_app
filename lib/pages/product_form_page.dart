@@ -203,6 +203,7 @@ class _ProductFormPageState extends State<ProductFormPage> {
                             children: [
                               Expanded(
                                 child: TextFormField(
+                                  // initialValue: _formData['urlImage'].toString(),
                                   decoration: const InputDecoration(
                                       labelText: 'Url da imagem'),
                                   textInputAction: TextInputAction.done,
@@ -211,7 +212,7 @@ class _ProductFormPageState extends State<ProductFormPage> {
                                   controller: _imageUrlController,
                                   onFieldSubmitted: (_) => _onSubmitForm(),
                                   onSaved: (urlImage) =>
-                                      (_formData)['urlImage'] = urlImage ?? '',
+                                      (_formData)['imageUrl'] = urlImage ?? '',
                                   validator: (_imageUrl) {
                                     final imageUrl = _imageUrl ?? '';
                                     if (!isValidImageUrl(imageUrl)) {
