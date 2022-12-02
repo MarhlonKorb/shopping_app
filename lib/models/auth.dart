@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart' as http;
+import 'package:shop/exceptions/auth_exception.dart';
 
 class Auth with ChangeNotifier {
 
@@ -14,13 +15,20 @@ class Auth with ChangeNotifier {
       body: jsonEncode(
           {'email': email, 'password': password, 'returnSecureToken': true}),
     );
+
+    final body = jsonDecode(response.body);
+    // Valida se ocorreu uma excessão
+    if (body['error'] != null) {
+      // Pega a mensagem do objeto de erro retornado
+      throw AuthException(body['error']['message']);
+    }
   }
 
   Future<void> signUp(String email, String password) async {
-    _authenticate(email, password, 'signUp');
+    return _authenticate(email, password, 'signUp');
   }
 
   Future<void> login(String email, String password) async {
-    _authenticate(email, password, 'signInWithPassword');
+    return _authenticate(email, password, 'signInWithPassword');
   }
 }
