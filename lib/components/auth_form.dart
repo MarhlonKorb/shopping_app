@@ -20,7 +20,7 @@ class _AuthFormState extends State<AuthForm> {
   AuthMode _authMode = AuthMode.Login;
   final Map<String, String> _authData = {
     'email': '',
-    'senha': '',
+    'password': '',
   };
 
   /// Valida se o usuário está em modo de login
