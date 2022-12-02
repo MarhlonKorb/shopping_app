@@ -218,6 +218,7 @@ class _ProductFormPageState extends State<ProductFormPage> {
                                     if (!isValidImageUrl(imageUrl)) {
                                       return 'Informe uma Url válida';
                                     }
+                                    return null;
                                   },
                                 ),
                               ),
