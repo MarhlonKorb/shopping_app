@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
+import '../models/auth.dart';
 
 enum AuthMode { Signup, Login }
 
@@ -32,20 +35,27 @@ class _AuthFormState extends State<AuthForm> {
     });
   }
 
-  void _submit() {
+  Future<void> _submit() async {
     final isValid = _formKey.currentState?.validate() ?? false;
     if (isValid) {
       return;
     }
     setState(() => _isLoading = true);
 
-  _formKey.currentState!.save();
+    _formKey.currentState!.save();
+    Auth auth = Provider.of(context, listen: false);
 
-  if (_isLogin()) {
-    
-  } else {
-
-  }
+    if (_isLogin()) {
+      await auth.login(
+        _authData['email']!,
+        _authData['password']!,
+      );
+    } else {
+      await auth.signUp(
+        _authData['email']!,
+        _authData['password']!,
+      );
+    }
 
     setState(() => _isLoading = false);
   }
@@ -96,29 +106,30 @@ class _AuthFormState extends State<AuthForm> {
                     decoration:
                         const InputDecoration(labelText: 'Confirmar senha'),
                     keyboardType: TextInputType.emailAddress,
+                    obscureText: true,
                     validator: _isLogin()
                         ? null
                         : (_password) {
                             final password = _password ?? '';
-                            if (_password != _passwordController) {
+                            if (password != _passwordController) {
                               return 'Senhas informadas não conferem';
                             }
                             return null;
                           }),
               const SizedBox(height: 20),
-              if(_isLoading)
+              if (_isLoading)
                 const CircularProgressIndicator()
               else
-              ElevatedButton(
-                onPressed: _submit,
-                style: ElevatedButton.styleFrom(
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(30),
-                    ),
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 30, vertical: 8)),
-                child: Text(_isLogin() ? 'ENTRAR' : 'REGISTRAR'),
-              ),
+                ElevatedButton(
+                  onPressed: _submit,
+                  style: ElevatedButton.styleFrom(
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(30),
+                      ),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 30, vertical: 8)),
+                  child: Text(_isLogin() ? 'ENTRAR' : 'REGISTRAR'),
+                ),
               Spacer(),
               TextButton(
                 onPressed: _switchAuthMode,
