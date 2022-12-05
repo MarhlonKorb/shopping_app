@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:shop/models/auth.dart';
 import 'package:shop/models/product.dart';
 import 'package:shop/utils/app_routes.dart';
 
@@ -14,6 +15,7 @@ class ProductGridItem extends StatelessWidget {
     // é possivel obter o provider de Product para receber os dados da lista de forma atualizada
     final product = Provider.of<Product>(context, listen: false);
     final cart = Provider.of<Cart>(context, listen: false);
+    final auth = Provider.of<Auth>(context, listen: false);
     // Atributo 'listen' do provider permite configurar se uma mudança deve ser notificada ou não
     // É utilizado em casos onde as alterações não geram impacto na interface gráfica do app=
     return ClipRRect(
@@ -25,7 +27,7 @@ class ProductGridItem extends StatelessWidget {
           leading: Consumer<Product>(
             builder: (ctx, product, _) => IconButton(
               onPressed: () {
-                product.toggleFavorite();
+                product.toggleFavorite(auth.token ?? '', auth.userId ?? '');
               },
               icon: Icon(
                   product.isFavorite ? Icons.favorite : Icons.favorite_border),
