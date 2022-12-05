@@ -17,19 +17,20 @@ class Store {
   /// Método que lê strings
   static Future<String> getString(String key,
       [String defaultValue = '']) async {
-        final prefs = await SharedPreferences.getInstance();
-        return prefs.getString(key) ?? defaultValue;
-      }
-  
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString(key) ?? defaultValue;
+  }
+
+  /// Retorna um map de um objeto
   static Future<Map<String, dynamic>> getMap(String key) async {
     try {
       return jsonDecode(await getString(key));
     } catch (_) {
-      return{};
-    }    
+      return {};
+    }
   }
 
-  static Future<bool> remove(String key)async {
+  static Future<bool> remove(String key) async {
     final prefs = await SharedPreferences.getInstance();
     return prefs.remove(key);
   }

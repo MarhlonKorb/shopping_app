@@ -4,7 +4,7 @@ import 'package:shop/exceptions/auth_exception.dart';
 
 import '../models/auth.dart';
 
-enum AuthMode { Signup, Login }
+enum AuthMode { signup, login }
 
 class AuthForm extends StatefulWidget {
   const AuthForm({super.key});
@@ -13,29 +13,79 @@ class AuthForm extends StatefulWidget {
   State<AuthForm> createState() => _AuthFormState();
 }
 
-class _AuthFormState extends State<AuthForm> {
+class _AuthFormState extends State<AuthForm>
+    with SingleTickerProviderStateMixin {
   final _passwordController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
   bool _isLoading = false;
-  AuthMode _authMode = AuthMode.Login;
+  AuthMode _authMode = AuthMode.login;
   final Map<String, String> _authData = {
     'email': '',
     'password': '',
   };
 
+  AnimationController? _controller;
+  // Instância do objeto a ser animado
+  Animation<double>? _opacityAnimation;
+  Animation<Offset>? _slideAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(
+        milliseconds: 300,
+      ),
+    );
+    // Classe que recebe as configurações de animação
+    _opacityAnimation = Tween(
+      begin: 0.0,
+      end: 1.0,
+    ).animate(
+      CurvedAnimation(
+        parent: _controller!,
+        curve: Curves.linear,
+      ),
+    );
+
+    _slideAnimation = Tween<Offset>(
+      begin: const Offset(0, -1.5),
+      end: const Offset(0, 0),
+    ).animate(
+      CurvedAnimation(
+        parent: _controller!,
+        curve: Curves.linear,
+      ),
+    );
+
+    // Notifica que a animação deve ocorrer
+    // _heightAnimation?.addListener(() => setState(() {}));
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    _controller?.dispose();
+  }
+
   /// Valida se o usuário está em modo de login
-  bool _isLogin() => _authMode == AuthMode.Login;
+  bool _isLogin() => _authMode == AuthMode.login;
 
   /// Valida se o usuário está em modo de signup
-  bool _isSignup() => _authMode == AuthMode.Signup;
+  // bool _isSignup() => _authMode == AuthMode.signup;
 
   /// Método que altera a acessibilidade aos inputs de senha do usuário
   void _switchAuthMode() {
     setState(() {
       if (_isLogin()) {
-        _authMode = AuthMode.Signup;
+        _authMode = AuthMode.signup;
+        // Aqui é feita a alternância da animação de acordo com a escolha do usuário
+        _controller?.forward();
       } else {
-        _authMode = AuthMode.Login;
+        _authMode = AuthMode.login;
+        // Aqui é feita a alternância da animação de acordo com a escolha do usuário
+        _controller?.reverse();
       }
     });
   }
@@ -82,8 +132,8 @@ class _AuthFormState extends State<AuthForm> {
       }
     } on AuthException catch (error) {
       _showErrorDialog(error.toString());
-    } catch (erro){
-       _showErrorDialog('Ocorreu um erro inesperado.');
+    } catch (erro) {
+      _showErrorDialog('Ocorreu um erro inesperado.');
     }
 
     setState(() => _isLoading = false);
@@ -96,8 +146,12 @@ class _AuthFormState extends State<AuthForm> {
     return Card(
       elevation: 8,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-      child: Container(
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.linear,
         padding: const EdgeInsets.all(16),
+        // Se _heightAnimation for nulo, apresenta a tela sem animação
+        // height: _heightAnimation?.value.height ?? (_isLogin() ? 310 : 400),
         height: _isLogin() ? 310 : 400,
         width: deviceSize.width * 0.75,
         child: Form(
@@ -130,21 +184,33 @@ class _AuthFormState extends State<AuthForm> {
                   return null;
                 },
               ),
-              if (_isSignup())
-                TextFormField(
-                    decoration:
-                        const InputDecoration(labelText: 'Confirmar senha'),
-                    keyboardType: TextInputType.emailAddress,
-                    obscureText: true,
-                    validator: _isLogin()
-                        ? null
-                        : (_password) {
-                            final password = _password ?? '';
-                            if (password != _passwordController) {
-                              return 'Senhas informadas não conferem';
-                            }
-                            return null;
-                          }),
+              AnimatedContainer(
+                duration: const Duration(milliseconds: 300),
+                curve: Curves.linear,
+                constraints: BoxConstraints(
+                    minHeight: _isLogin() ? 0 : 60,
+                    maxHeight: _isLogin() ? 0 : 120),
+                child: FadeTransition(
+                  opacity: _opacityAnimation!,
+                  child: SlideTransition(
+                    position: _slideAnimation!,
+                    child: TextFormField(
+                        decoration:
+                            const InputDecoration(labelText: 'Confirmar senha'),
+                        keyboardType: TextInputType.emailAddress,
+                        obscureText: true,
+                        validator: _isLogin()
+                            ? null
+                            : (_password) {
+                                final password = _password ?? '';
+                                if (password != _passwordController) {
+                                  return 'Senhas informadas não conferem';
+                                }
+                                return null;
+                              }),
+                  ),
+                ),
+              ),
               const SizedBox(height: 20),
               if (_isLoading)
                 const CircularProgressIndicator()

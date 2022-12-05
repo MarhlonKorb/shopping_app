@@ -145,7 +145,7 @@ class ProductList with ChangeNotifier {
       notifyListeners();
 
       final response = await http.delete(
-        Uri.parse('$Constants.BASE_URL/${product.id}.json?=auth=$_token'),
+        Uri.parse('${Constants.productBaseUrl}/${product.id}.json?=auth=$_token'),
       );
 
       // Caso o status code seja de erro(400), o item é retornado a lista de itens
