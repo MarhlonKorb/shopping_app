@@ -11,11 +11,11 @@ class Auth with ChangeNotifier {
   String? _token;
   String? _email;
   String? _userId;
-  DateTime? _expireDate;
+  DateTime? _expiryDate;
   Timer? _logoutTimer;
 
   bool get isAuth {
-    final isValid = _expireDate?.isAfter(DateTime.now()) ?? false;
+    final isValid = _expiryDate?.isAfter(DateTime.now()) ?? false;
     return _token != null && isValid;
   }
 
@@ -52,7 +52,7 @@ class Auth with ChangeNotifier {
       _email = body['email'];
       _userId = body['localId'];
 
-      _expireDate = DateTime.now().add(
+      _expiryDate = DateTime.now().add(
         Duration(
           seconds: int.parse(body['expiresIn']),
         ),
@@ -62,7 +62,7 @@ class Auth with ChangeNotifier {
         'token': _token,
         'email': _email,
         'userId': _userId,
-        'expiryDate': _expireDate!.toIso8601String(),
+        'expiryDate': _expiryDate!.toIso8601String(),
       });
 
       _autoLogout();
@@ -81,23 +81,22 @@ class Auth with ChangeNotifier {
   }
 
   /// Método responsável por fazer o login do usuário automaticamente
-  Future<void> tryOutLogin() async {
+  Future<void> tryAutoLogin() async {
     if (isAuth) return;
 
     final userData = await Store.getMap('userData');
     if (userData.isEmpty) return;
 
-    final expiryDate = DateTime.parse(userData['expiryDaye']);
+    final expiryDate = DateTime.parse(userData['expiryDate']);
     if (expiryDate.isBefore(DateTime.now())) return;
 
     _token = userData['token'];
     _email = userData['email'];
     _userId = userData['userId'];
-    _expireDate = expiryDate;
+    _expiryDate = expiryDate;
 
     _autoLogout();
     notifyListeners();
-
   }
 
   /// Método para deslogar o usuário da aplicação
@@ -105,11 +104,12 @@ class Auth with ChangeNotifier {
     _token = null;
     _email = null;
     _userId = null;
-    _expireDate = null;
+    _expiryDate = null;
     clearLogoutTimer();
-    notifyListeners();
+    Store.remove('userData').then((_) => notifyListeners());
   }
 
+  /// Remove a informação do tempo de login do token do usuário
   void clearLogoutTimer() {
     _logoutTimer?.cancel();
     _logoutTimer = null;
@@ -118,7 +118,7 @@ class Auth with ChangeNotifier {
   void _autoLogout() {
     clearLogoutTimer();
     // Diferença da data de expiração do token com a data atual
-    final timeToLogout = _expireDate?.difference(DateTime.now()).inSeconds;
+    final timeToLogout = _expiryDate?.difference(DateTime.now()).inSeconds;
     _logoutTimer = Timer(Duration(seconds: timeToLogout ?? 0), logout);
   }
 }
