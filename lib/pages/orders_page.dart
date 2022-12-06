@@ -10,7 +10,6 @@ class OrderPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final OrderList orders = Provider.of(context);
     return Scaffold(
       appBar: AppBar(
         title: const Text('Meus Pedidos'),
@@ -28,7 +27,7 @@ class OrderPage extends StatelessWidget {
                 child: Text('Ocorreu um erro ao carregar a lista de pedidos.'));
           } else {
             return Consumer<OrderList>(
-              builder: (context, value, child) => ListView.builder(
+              builder: (context, orders, child) => ListView.builder(
                 itemCount: orders.itemsCount,
                 itemBuilder: (cxt, i) => OrderWidget(order: orders.items[i]),
               ),
