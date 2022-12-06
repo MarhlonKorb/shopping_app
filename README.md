@@ -22,7 +22,7 @@
 
 <h2>Link para as imagens das telas</h2>
 
-<a>(https://github.com/MarhlonKorb/shopping_app/tree/master/assets/pictures) <a/>
+<a>(https://github.com/MarhlonKorb/shopping_app/blob/master/assets/Telas.md) <a/>
 
 <br>Git clone:
 
